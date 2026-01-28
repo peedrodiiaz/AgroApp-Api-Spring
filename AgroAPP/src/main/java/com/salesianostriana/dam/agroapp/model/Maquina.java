@@ -2,7 +2,6 @@ package com.salesianostriana.dam.agroapp.model;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,20 +17,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Getter @Setter
-public class Trabajador {
+public class Maquina {
 
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private String nombre;
-  private String apellido;
 
-  @Column(unique = true)
-  private String dni;
-  
-  @Column (unique = true)
-  private int telefono;
-  
-  private String email;
-  private LocalDate fechaAlta;
-  
+  private String nombrel;
+  private String modelo;
+  private String numSerie;
+
+  private LocalDate fechaCompra;
+
+  private EstadoMaquina estadoMaquina;
+
+
 }
