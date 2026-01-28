@@ -1,12 +1,11 @@
 package com.salesianostriana.dam.agroapp.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,5 +32,25 @@ public class Trabajador {
   
   private String email;
   private LocalDate fechaAlta;
-  
+
+
+
+  @OneToMany(mappedBy = "trabajador", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
+  private List<Incidencia> incidencias = new ArrayList<>();
+
+  @OneToMany (mappedBy = "trabajador", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
+  private List <Asignacion>asignacions = new ArrayList<>();
+
+
+    public void addIncidencia(Incidencia incidencia) {
+        incidencias.add(incidencia);
+        incidencia.setTrabajador(this);
+    }
+
+    public void removeIncidencia(Incidencia incidencia) {
+        incidencias.remove(incidencia);
+        incidencia.setTrabajador(null);
+    }
 }
