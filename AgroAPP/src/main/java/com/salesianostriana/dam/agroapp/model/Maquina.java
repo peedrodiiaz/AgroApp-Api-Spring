@@ -15,6 +15,7 @@ import lombok.Setter;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Table (name = "maquinas")
 @Builder
 @Getter @Setter
 public class Maquina {
@@ -33,18 +34,38 @@ public class Maquina {
 
   @OneToMany (mappedBy = "maquina", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnore
+  @Builder.Default
   private List<Incidencia> incidencias=new ArrayList<>();
 
     @OneToMany (mappedBy = "maquina", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @Builder.Default
   private List <Asignacion>asignaciones = new ArrayList<>();
 
   public void addIncidencia(Incidencia incidencia) {
         incidencias.add(incidencia);
         incidencia.setMaquina(this);
-
-
   }
+    public void addAsignacion(Asignacion asignacion) {
+        this.asignaciones.add(asignacion);
+        asignacion.setMaquina(this);
+    }
+
+    public void removeAsignacion(Asignacion asignacion) {
+        this.asignaciones.remove(asignacion);
+        asignacion.setMaquina(null);
+    }
+
+    public boolean validarEstado (EstadoMaquina nuevoEstado){
+      if (this.estado == nuevoEstado)
+          return  true;
+
+      if (this.estado == EstadoMaquina.INACTIVA && nuevoEstado == EstadoMaquina.ACTIVA){
+          return  false;
+      }
+      return true;
+    }
+
 
 
 }

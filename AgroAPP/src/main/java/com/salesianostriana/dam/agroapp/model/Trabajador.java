@@ -28,10 +28,13 @@ public class Trabajador {
   private String dni;
   
   @Column (unique = true)
-  private int telefono;
+  private String telefono;
   
   private String email;
   private LocalDate fechaAlta;
+
+  @Enumerated(EnumType.STRING)
+  private Rol rol;
 
 
 

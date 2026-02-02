@@ -1,6 +1,7 @@
 package com.salesianostriana.dam.agroapp.dto.incidencia;
 
 import com.salesianostriana.dam.agroapp.model.EstadoIncidencia;
+import com.salesianostriana.dam.agroapp.model.Prioridad;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,6 +14,7 @@ public record CreateIncidenciaRequest(
         @NotNull
         Long maquinaId,
         @NotNull
-        Long trabajadorId
+        Long trabajadorId,
+        Prioridad prioridad
 ) {
 }

@@ -12,4 +12,5 @@ public interface MaquinaRepository extends JpaRepository<Maquina,Long> {
     Optional<Maquina> findByNumSerie(String numSerie);
     List<Maquina> findByEstado(EstadoMaquina estado);
     List<Maquina> findByModeloContainingIgnoreCase(String modelo);
+    boolean existsByNumSerie (String numSerie);
 }
