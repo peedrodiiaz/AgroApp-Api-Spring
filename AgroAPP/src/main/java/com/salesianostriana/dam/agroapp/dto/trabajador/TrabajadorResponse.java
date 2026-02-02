@@ -1,6 +1,6 @@
 package com.salesianostriana.dam.agroapp.dto.trabajador;
 
-import com.salesianostriana.dam.agroapp.model.Rol;
+import com.salesianostriana.dam.agroapp.enums.Rol;
 import com.salesianostriana.dam.agroapp.model.Trabajador;
 
 import java.time.LocalDate;

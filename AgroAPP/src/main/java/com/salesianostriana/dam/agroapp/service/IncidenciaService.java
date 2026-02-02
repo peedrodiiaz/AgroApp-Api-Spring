@@ -1,7 +1,8 @@
 package com.salesianostriana.dam.agroapp.service;
 
 import com.salesianostriana.dam.agroapp.dto.incidencia.CreateIncidenciaRequest;
-import com.salesianostriana.dam.agroapp.dto.trabajador.TrabajadorResponse;
+import com.salesianostriana.dam.agroapp.enums.EstadoIncidencia;
+import com.salesianostriana.dam.agroapp.enums.Rol;
 import com.salesianostriana.dam.agroapp.model.*;
 import com.salesianostriana.dam.agroapp.repository.IncidenciaRepository;
 import com.salesianostriana.dam.agroapp.repository.MaquinaRepository;

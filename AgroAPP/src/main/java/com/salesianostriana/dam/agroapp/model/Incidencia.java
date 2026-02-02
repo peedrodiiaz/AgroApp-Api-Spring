@@ -1,9 +1,10 @@
 package com.salesianostriana.dam.agroapp.model;
 
+import com.salesianostriana.dam.agroapp.enums.EstadoIncidencia;
+import com.salesianostriana.dam.agroapp.enums.Prioridad;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity

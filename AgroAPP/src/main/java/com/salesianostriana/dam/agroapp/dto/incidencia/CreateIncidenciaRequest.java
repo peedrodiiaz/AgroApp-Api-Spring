@@ -1,7 +1,7 @@
 package com.salesianostriana.dam.agroapp.dto.incidencia;
 
-import com.salesianostriana.dam.agroapp.model.EstadoIncidencia;
-import com.salesianostriana.dam.agroapp.model.Prioridad;
+import com.salesianostriana.dam.agroapp.enums.EstadoIncidencia;
+import com.salesianostriana.dam.agroapp.enums.Prioridad;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

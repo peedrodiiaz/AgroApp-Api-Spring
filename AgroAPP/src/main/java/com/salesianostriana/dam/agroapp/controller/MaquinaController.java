@@ -2,6 +2,7 @@ package com.salesianostriana.dam.agroapp.controller;
 
 import com.salesianostriana.dam.agroapp.dto.maquina.CambiarEstadoMaquinaDto;
 import com.salesianostriana.dam.agroapp.dto.maquina.MaquinaResponse;
+import com.salesianostriana.dam.agroapp.dto.maquina.MaquinaStatsDto;
 import com.salesianostriana.dam.agroapp.dto.maquina.UpdateMaquinaDto;
 import com.salesianostriana.dam.agroapp.model.Maquina;
 import com.salesianostriana.dam.agroapp.service.MaquinaService;
@@ -12,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping ("/api/maquinas")
 public class MaquinaController {
@@ -45,5 +46,11 @@ public class MaquinaController {
         maquinaService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/stats")
+    public ResponseEntity<MaquinaStatsDto> getStats() {
+        return ResponseEntity.ok(maquinaService.getStats());
+    }
+
 
 }

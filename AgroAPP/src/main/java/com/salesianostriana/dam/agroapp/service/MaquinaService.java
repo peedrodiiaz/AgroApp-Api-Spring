@@ -1,8 +1,9 @@
 package com.salesianostriana.dam.agroapp.service;
 
 import com.salesianostriana.dam.agroapp.dto.maquina.CreateMaquinaRequest;
+import com.salesianostriana.dam.agroapp.dto.maquina.MaquinaStatsDto;
 import com.salesianostriana.dam.agroapp.dto.maquina.UpdateMaquinaDto;
-import com.salesianostriana.dam.agroapp.model.EstadoMaquina;
+import com.salesianostriana.dam.agroapp.enums.EstadoMaquina;
 import com.salesianostriana.dam.agroapp.model.Maquina;
 import com.salesianostriana.dam.agroapp.repository.MaquinaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -43,6 +44,15 @@ public class MaquinaService {
         return maquinaRepository.save(maquina);
     }
 
+
+    public MaquinaStatsDto getStats() {
+        long total = maquinaRepository.count();
+        long activas = maquinaRepository.countByEstado(EstadoMaquina.ACTIVA);
+        long mantenimiento = maquinaRepository.countByEstado(EstadoMaquina.MANTENIMIENTO);
+
+
+        return new MaquinaStatsDto(total, activas, mantenimiento);
+    }
 
     public Maquina update (Long id, UpdateMaquinaDto cmd){
         Maquina maquina= findById(id);

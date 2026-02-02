@@ -1,0 +1,98 @@
+package com.salesianostriana.dam.agroapp.service;
+
+import com.salesianostriana.dam.agroapp.dto.trabajador.CreateTrabajadorRequest;
+import com.salesianostriana.dam.agroapp.dto.trabajador.UpdateTrabajadorRequest;
+import com.salesianostriana.dam.agroapp.model.Trabajador;
+import com.salesianostriana.dam.agroapp.repository.TrabajadorRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class TrabajadorService {
+
+    private final TrabajadorRepository trabajadorRepository;
+    private final PasswordEncoder passwordEncoder; 
+
+    public Page <Trabajador>getAll(Pageable pageable) {
+        return trabajadorRepository.findAll(pageable);
+    }
+
+
+    public Trabajador create(CreateTrabajadorRequest request) {
+        if (trabajadorRepository.existsByEmail(request.email())) {
+            throw new RuntimeException("El email ya está registrado");
+        }
+        if (trabajadorRepository.existsByDni(request.dni())) {
+            throw new RuntimeException("El DNI ya está registrado");
+        }
+
+        Trabajador trabajador = Trabajador.builder()
+                .nombre(request.nombre())
+                .apellido(request.apellido())
+                .dni(request.dni())
+                .email(request.email())
+                .telefono(request.telefono())
+                .fechaAlta(LocalDate.now())
+                .rol(request.rol())
+                .password(passwordEncoder.encode(request.password()))
+                .build();
+
+        return trabajadorRepository.save(trabajador);
+    }
+
+    public Trabajador findByEmail(String email) {
+        return trabajadorRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    public Trabajador update(Long id, UpdateTrabajadorRequest request) {
+        Trabajador trabajador = trabajadorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Trabajador no encontrado"));
+
+        if (request.email() != null && !request.email().equals(trabajador.getEmail())) {
+            if (trabajadorRepository.existsByEmail(request.email())) {
+                throw new RuntimeException("El email ya está en uso");
+            }
+            trabajador.setEmail(request.email());
+        }
+
+        if (request.nombre() != null) trabajador.setNombre(request.nombre());
+        if (request.apellido() != null) trabajador.setApellido(request.apellido());
+        if (request.telefono() != null) trabajador.setTelefono(request.telefono());
+
+        return trabajadorRepository.save(trabajador);
+    }
+    public void delete(Long id) {
+        Trabajador trabajador = trabajadorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Trabajador no encontrado"));
+
+
+        if (!trabajador.getIncidencias().isEmpty()) {
+            throw new RuntimeException("No se puede borrar el trabajador porque tiene incidencias asociadas. Desactívelo en su lugar.");
+        }
+
+        if (!trabajador.getAsignaciones().isEmpty()) {
+            throw new RuntimeException("No se puede borrar porque tiene asignaciones.");
+        }
+
+        trabajadorRepository.delete(trabajador);
+    }
+
+    public Trabajador cambiarActivoInactivo(Long id) {
+        Trabajador trabajador = trabajadorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Trabajador no encontrado"));
+
+        trabajador.setEnabled(!trabajador.isEnabled());
+
+        return trabajadorRepository.save(trabajador);
+    }
+
+}

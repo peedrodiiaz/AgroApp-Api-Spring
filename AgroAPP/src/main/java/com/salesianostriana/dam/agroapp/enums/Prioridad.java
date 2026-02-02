@@ -1,4 +1,4 @@
-package com.salesianostriana.dam.agroapp.model;
+package com.salesianostriana.dam.agroapp.enums;
 
 public enum Prioridad {
     BAJA,

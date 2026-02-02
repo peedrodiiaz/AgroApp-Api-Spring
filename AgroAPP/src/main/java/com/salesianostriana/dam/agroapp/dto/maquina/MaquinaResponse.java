@@ -1,6 +1,6 @@
 package com.salesianostriana.dam.agroapp.dto.maquina;
 
-import com.salesianostriana.dam.agroapp.model.EstadoMaquina;
+import com.salesianostriana.dam.agroapp.enums.EstadoMaquina;
 import com.salesianostriana.dam.agroapp.model.Maquina;
 
 import java.time.LocalDate;

@@ -1,6 +1,5 @@
 package com.salesianostriana.dam.agroapp.dto.maquina;
 
-import com.salesianostriana.dam.agroapp.model.EstadoMaquina;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 import org.jetbrains.annotations.NotNull;

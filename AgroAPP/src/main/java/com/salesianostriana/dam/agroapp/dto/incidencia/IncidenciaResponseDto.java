@@ -2,9 +2,9 @@ package com.salesianostriana.dam.agroapp.dto.incidencia;
 
 import com.salesianostriana.dam.agroapp.dto.maquina.MaquinaResponse;
 import com.salesianostriana.dam.agroapp.dto.trabajador.TrabajadorResponse;
-import com.salesianostriana.dam.agroapp.model.EstadoIncidencia;
+import com.salesianostriana.dam.agroapp.enums.EstadoIncidencia;
 import com.salesianostriana.dam.agroapp.model.Incidencia;
-import com.salesianostriana.dam.agroapp.model.Prioridad;
+import com.salesianostriana.dam.agroapp.enums.Prioridad;
 
 import java.time.LocalDateTime;
 
