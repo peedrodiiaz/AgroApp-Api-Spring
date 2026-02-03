@@ -71,8 +71,6 @@ public class Trabajador implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Convierte tu Enum Rol en una autoridad que Spring entienda
-        // "ROLE_" es un prefijo estándar necesario
         return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));
     }
 

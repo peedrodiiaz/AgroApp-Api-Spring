@@ -4,6 +4,7 @@ package com.salesianostriana.dam.agroapp.controller;
 
 import com.salesianostriana.dam.agroapp.dto.security.AuthResponse;
 import com.salesianostriana.dam.agroapp.dto.security.LoginRequest;
+import com.salesianostriana.dam.agroapp.dto.trabajador.TrabajadorResponse;
 import com.salesianostriana.dam.agroapp.model.Trabajador;
 import com.salesianostriana.dam.agroapp.repository.TrabajadorRepository;
 
