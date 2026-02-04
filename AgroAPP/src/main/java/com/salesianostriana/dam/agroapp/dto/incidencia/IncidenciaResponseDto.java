@@ -23,7 +23,7 @@ public record IncidenciaResponseDto(
                 i.getId(),
                 i.getTitulo(),
                 i.getDescripcion(),
-                i.getEstado(),
+                i.getEstadoIncidencia(),
                 i.getPrioridad(),
                 i.getFechaApertura(),
                 MaquinaResponse.of(i.getMaquina()),

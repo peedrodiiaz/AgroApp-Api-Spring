@@ -46,6 +46,16 @@ public class TrabajadorController {
         );
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<TrabajadorResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateTrabajadorRequest body
+    ) {
+        return ResponseEntity.ok(
+                TrabajadorResponse.of(trabajadorService.update(id, body))
+        );
+    }
+
     @PatchMapping("/{id}/activacion")
     public ResponseEntity<TrabajadorResponse> toggleActivacion(@PathVariable Long id) {
         return ResponseEntity.ok(

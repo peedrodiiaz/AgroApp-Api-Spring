@@ -25,16 +25,16 @@ public class MaquinaController {
         return  maquinaService.findAll(pageable).map(MaquinaResponse::of);
     }
 
-    @PutMapping ("/{id/estado")
+    @PutMapping ("/{id}")
     public ResponseEntity<MaquinaResponse> update (@PathVariable Long id,
 
-                                                   @RequestBody UpdateMaquinaDto dto){
+                                                    @RequestBody UpdateMaquinaDto dto){
         return  ResponseEntity.ok(
                 MaquinaResponse.of(maquinaService.update(id, dto))
         );
     }
 
-    @PatchMapping ("{id}/estado")
+    @PatchMapping ("/{id}/estado")
     public ResponseEntity<MaquinaResponse>cambiarEstado(@PathVariable Long id,
                                                         @RequestBody  CambiarEstadoMaquinaDto cmd)
     {
