@@ -1,81 +1,121 @@
 package com.salesianostriana.dam.agroapp.service;
 
 import com.salesianostriana.dam.agroapp.model.Trabajador;
-
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
+import com.salesianostriana.dam.agroapp.security.errorhandling.JwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import java.security.Key;
-import java.util.Date;
-import java.util.function.Function;
+import io.jsonwebtoken.security.SignatureException;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 @Service
 public class JwtService {
 
+    public static final String TOKEN_TYPE = "JWT";
+    public static final String TOKEN_HEADER = "Authorization";
+    public static final String TOKEN_PREFIX = "Bearer ";
 
-    private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    @Value("${jwt.duration}")
+    private long jwtLifeInMinutes;
+
+    @Value("${jwt.refresh.secret}")
+    private String refreshSecret;
+
+    @Value("${jwt.refresh.duration}")
+    private long refreshLifeInDays;
+
+    private JwtParser jwtParser;
+    private JwtParser refreshTokenParser;
+
+    private SecretKey secretKey;
+    private SecretKey refreshSecretKey;
+
+    @PostConstruct
+    public void init() {
+        secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        refreshSecretKey = Keys.hmacShaKeyFor(refreshSecret.getBytes());
+
+        jwtParser = Jwts.parser()
+                .verifyWith(secretKey)
+                .build();
+
+        refreshTokenParser = Jwts.parser()
+                .verifyWith(refreshSecretKey)
+                .build();
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        if (userDetails instanceof Trabajador trabajador) {
-            extraClaims.put("rol", trabajador.getRol().name());
-            extraClaims.put("id", trabajador.getId());
-        }
+    public String generateToken(Trabajador trabajador) {
+        Date tokenExpirationDate = Date.from(
+                LocalDateTime
+                        .now()
+                        .plusMinutes(jwtLifeInMinutes)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant());
 
         return Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .header().type(TOKEN_TYPE)
+                .and()
+                .subject(trabajador.getId().toString())
+                .issuedAt(new Date())
+                .expiration(tokenExpirationDate)
+                .signWith(secretKey)
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public String generateRefreshToken(Trabajador trabajador) {
+        Date tokenExpirationDate = Date.from(
+                LocalDateTime
+                        .now()
+                        .plusMinutes(refreshLifeInDays)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant());
+
+        return Jwts.builder()
+                .header().type(TOKEN_TYPE)
+                .and()
+                .subject(trabajador.getId().toString())
+                .issuedAt(new Date())
+                .expiration(tokenExpirationDate)
+                .signWith(refreshSecretKey)
+                .compact();
     }
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public Long getUserIdFromAccessToken(String token) {
+        String sub = jwtParser.parseSignedClaims(token).getPayload().getSubject();
+        return Long.parseLong(sub);
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public Long getUserIdFromRefreshToken(String token) {
+        String sub = refreshTokenParser.parseSignedClaims(token).getPayload().getSubject();
+        return Long.parseLong(sub);
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public boolean validateAccessToken(String token) {
+        try {
+            jwtParser.parseSignedClaims(token);
+            return true;
+        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException
+                | IllegalArgumentException ex) {
+            throw new JwtException(ex.getMessage());
+        }
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
+    public boolean validateRefreshToken(String token) {
+        try {
+            refreshTokenParser.parseSignedClaims(token);
+            return true;
+        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException
+                | IllegalArgumentException ex) {
+            throw new JwtException(ex.getMessage());
+        }
     }
 }

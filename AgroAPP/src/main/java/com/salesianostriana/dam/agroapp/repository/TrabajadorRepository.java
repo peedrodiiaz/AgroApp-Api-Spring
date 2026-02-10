@@ -13,7 +13,6 @@ public interface TrabajadorRepository extends JpaRepository<Trabajador,Long> {
     Optional<Trabajador> findByDni(String dni);
     Optional<Trabajador> findByEmail(String email);
     boolean existsByDni(String dni);
-
-
     boolean existsByEmail(@Email @NotBlank String email);
+    boolean existsByTelefono(String telefono);
 }

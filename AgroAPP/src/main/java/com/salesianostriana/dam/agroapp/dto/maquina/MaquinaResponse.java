@@ -14,8 +14,8 @@ public record MaquinaResponse(
         EstadoMaquina estado
 ) {
 
-    public static MaquinaResponse of  (Maquina m){
-        return  new MaquinaResponse(
+    public static MaquinaResponse of(Maquina m){
+        return new MaquinaResponse(
                 m.getId(),
                 m.getNombre(),
                 m.getModelo(),

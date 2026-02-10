@@ -18,14 +18,14 @@ public class AuthenticationService {
 
     public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password())
-        );
+                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
         var user = repository.findByEmail(request.email())
                 .orElseThrow();
 
         var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
 
-        return new AuthResponse(jwtToken, TrabajadorResponse.of(user));
+        return new AuthResponse(jwtToken, refreshToken, TrabajadorResponse.of(user));
     }
 }

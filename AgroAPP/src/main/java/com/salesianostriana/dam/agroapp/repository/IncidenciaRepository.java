@@ -11,8 +11,5 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia,Long> {
     List<Incidencia> findByTrabajadorId(Long id);
     List<Incidencia> findByMaquinaId(Long id);
     List<Incidencia> findByEstadoIncidencia(EstadoIncidencia estadoIncidencia);
-
-
-
-
+    boolean existsByMaquinaIdAndEstadoIncidenciaIn(Long maquinaId, List<EstadoIncidencia> estados);
 }

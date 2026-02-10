@@ -33,6 +33,9 @@ public class TrabajadorService {
         if (trabajadorRepository.existsByDni(request.dni())) {
             throw new RuntimeException("El DNI ya está registrado");
         }
+        if (trabajadorRepository.existsByTelefono(request.telefono())) {
+            throw new RuntimeException("El teléfono ya está registrado");
+        }
 
         Trabajador trabajador = Trabajador.builder()
                 .nombre(request.nombre())
@@ -64,9 +67,15 @@ public class TrabajadorService {
             trabajador.setEmail(request.email());
         }
 
+        if (request.telefono() != null && !request.telefono().equals(trabajador.getTelefono())) {
+            if (trabajadorRepository.existsByTelefono(request.telefono())) {
+                throw new RuntimeException("El teléfono ya está en uso");
+            }
+            trabajador.setTelefono(request.telefono());
+        }
+
         if (request.nombre() != null) trabajador.setNombre(request.nombre());
         if (request.apellido() != null) trabajador.setApellido(request.apellido());
-        if (request.telefono() != null) trabajador.setTelefono(request.telefono());
 
         return trabajadorRepository.save(trabajador);
     }

@@ -1,6 +1,7 @@
 package com.salesianostriana.dam.agroapp.controller;
 
 import com.salesianostriana.dam.agroapp.dto.maquina.CambiarEstadoMaquinaDto;
+import com.salesianostriana.dam.agroapp.dto.maquina.CreateMaquinaRequest;
 import com.salesianostriana.dam.agroapp.dto.maquina.MaquinaResponse;
 import com.salesianostriana.dam.agroapp.dto.maquina.MaquinaStatsDto;
 import com.salesianostriana.dam.agroapp.dto.maquina.UpdateMaquinaDto;
@@ -9,38 +10,50 @@ import com.salesianostriana.dam.agroapp.service.MaquinaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping ("/api/maquinas")
+@RequestMapping("/api/maquinas")
 public class MaquinaController {
-    private  final MaquinaService maquinaService;
-
+    private final MaquinaService maquinaService;
 
     @GetMapping
-    public Page<MaquinaResponse>getAll (Pageable pageable){
-        return  maquinaService.findAll(pageable).map(MaquinaResponse::of);
+    public Page<MaquinaResponse> getAll(Pageable pageable) {
+        return maquinaService.findAll(pageable).map(MaquinaResponse::of);
     }
 
-    @PutMapping ("/{id}")
-    public ResponseEntity<MaquinaResponse> update (@PathVariable Long id,
-
-                                                    @RequestBody UpdateMaquinaDto dto){
-        return  ResponseEntity.ok(
-                MaquinaResponse.of(maquinaService.update(id, dto))
-        );
+    @GetMapping("/{id}")
+    public ResponseEntity<MaquinaResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                MaquinaResponse.of(maquinaService.findById(id)));
     }
 
-    @PatchMapping ("/{id}/estado")
-    public ResponseEntity<MaquinaResponse>cambiarEstado(@PathVariable Long id,
-                                                        @RequestBody  CambiarEstadoMaquinaDto cmd)
-    {
-        Maquina maquina= maquinaService.cambiarEstado(id,cmd.estado());
+    @PostMapping
+    public ResponseEntity<MaquinaResponse> create(@RequestBody CreateMaquinaRequest request) {
+        Maquina maquina = maquinaService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(MaquinaResponse.of(maquina));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MaquinaResponse> update(@PathVariable Long id,
+
+            @RequestBody UpdateMaquinaDto dto) {
+        return ResponseEntity.ok(
+                MaquinaResponse.of(maquinaService.update(id, dto)));
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<MaquinaResponse> cambiarEstado(@PathVariable Long id,
+            @RequestBody CambiarEstadoMaquinaDto cmd) {
+        Maquina maquina = maquinaService.cambiarEstado(id, cmd.estado());
         return ResponseEntity.ok(MaquinaResponse.of(maquina));
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         maquinaService.delete(id);
@@ -51,6 +64,5 @@ public class MaquinaController {
     public ResponseEntity<MaquinaStatsDto> getStats() {
         return ResponseEntity.ok(maquinaService.getStats());
     }
-
 
 }

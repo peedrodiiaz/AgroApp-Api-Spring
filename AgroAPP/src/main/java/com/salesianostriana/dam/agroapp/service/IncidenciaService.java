@@ -38,6 +38,17 @@ public class IncidenciaService {
         Maquina maquina = maquinaRepository.findById(cmd.maquinaId()).orElseThrow(
                 ()-> new EntityNotFoundException("No se ha encontrado la máquina con id %d".formatted(cmd.maquinaId()))
         );
+        
+        // Validar que no exista una incidencia abierta sobre la misma máquina
+        boolean existeIncidenciaAbierta = incidenciaRepository.existsByMaquinaIdAndEstadoIncidenciaIn(
+                cmd.maquinaId(),
+                java.util.Arrays.asList(EstadoIncidencia.ABIERTA, EstadoIncidencia.EN_PROGRESO)
+        );
+        
+        if (existeIncidenciaAbierta) {
+            throw new RuntimeException("Ya existe una incidencia abierta o en progreso sobre esta máquina. Cierre la anterior antes de crear una nueva.");
+        }
+        
         Trabajador logeado;
         if (trabajadorActual.getRol()== Rol.ADMIN && cmd.trabajadorId()!=null){
             logeado = trabajadorRepository.findById(cmd.trabajadorId())
