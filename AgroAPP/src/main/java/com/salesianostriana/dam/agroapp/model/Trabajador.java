@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "trabajadores")
@@ -71,7 +72,7 @@ public class Trabajador implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));
+        return Set.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));
     }
 
     @Override
