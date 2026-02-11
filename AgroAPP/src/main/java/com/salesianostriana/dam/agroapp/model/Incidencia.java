@@ -8,6 +8,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "incidencias")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
