@@ -26,7 +26,6 @@ public class IncidenciaController {
     public Page<IncidenciaResponseDto> getAll(
             @PageableDefault(size = 10, page = 0) Pageable pageable
     ) {
-        // Convertimos la lista de entidades a lista de DTOs
         return incidenciaService.getAll(pageable)
                 .map(IncidenciaResponseDto::of);
     }
