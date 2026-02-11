@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public class IncidenciaController {
                 .map(IncidenciaResponseDto::of);
     }
 
+
     @GetMapping ("{id}")
     public ResponseEntity<IncidenciaResponseDto>getById (@PathVariable Long id){
         return ResponseEntity.ok(IncidenciaResponseDto.of(incidenciaService.findById(id)));
@@ -44,8 +46,18 @@ public class IncidenciaController {
         );
         return ResponseEntity.ok(incidenciaCreada);
     }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<IncidenciaResponseDto> update(
+            @PathVariable Long id,
+            @RequestBody CreateIncidenciaRequest cmd) {
+        Incidencia actualizada = incidenciaService.update(id, cmd);
+        return ResponseEntity.ok(IncidenciaResponseDto.of(actualizada));
+    }
+
 
     @PatchMapping("/{id}/cerrar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<IncidenciaResponseDto> close(@PathVariable Long id) {
         Incidencia cerrada = incidenciaService.cerrar(id);
         return ResponseEntity.ok(IncidenciaResponseDto.of(cerrada));

@@ -18,6 +18,7 @@ public class Incidencia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableGenerator(name = "incidencia_id_gen", table = "id_sequences", pkColumnName = "sequence_name", valueColumnName = "next_val", initialValue = 1, allocationSize = 1)
     private Long id;
 
     private String titulo;

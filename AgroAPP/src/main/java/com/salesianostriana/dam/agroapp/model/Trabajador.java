@@ -22,7 +22,8 @@ import java.util.Set;
 @Getter @Setter
 public class Trabajador implements UserDetails {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;

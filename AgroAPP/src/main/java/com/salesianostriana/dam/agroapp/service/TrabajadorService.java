@@ -22,11 +22,13 @@ public class TrabajadorService {
     private final PasswordEncoder passwordEncoder; 
 
     public Page <Trabajador>getAll(Pageable pageable) {
-        return trabajadorRepository.findAll(pageable);
+        return trabajadorRepository.findByEnabledTrue(pageable);
     }
 
 
     public Trabajador create(CreateTrabajadorRequest request) {
+
+        
         if (trabajadorRepository.existsByEmail(request.email())) {
             throw new RuntimeException("El email ya está registrado");
         }
@@ -46,9 +48,10 @@ public class TrabajadorService {
                 .fechaAlta(LocalDate.now())
                 .rol(request.rol())
                 .password(passwordEncoder.encode(request.password()))
+                .enabled(true)
                 .build();
 
-        return trabajadorRepository.save(trabajador);
+        Trabajador guardado = trabajadorRepository.save(trabajador);return guardado;
     }
 
     public Trabajador findByEmail(String email) {
@@ -83,16 +86,8 @@ public class TrabajadorService {
         Trabajador trabajador = trabajadorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Trabajador no encontrado"));
 
-
-        if (!trabajador.getIncidencias().isEmpty()) {
-            throw new RuntimeException("No se puede borrar el trabajador porque tiene incidencias asociadas. Desactívelo en su lugar.");
-        }
-
-        if (!trabajador.getAsignaciones().isEmpty()) {
-            throw new RuntimeException("No se puede borrar porque tiene asignaciones.");
-        }
-
-        trabajadorRepository.delete(trabajador);
+        trabajador.setEnabled(false);
+        trabajadorRepository.save(trabajador);
     }
 
     public Trabajador cambiarActivoInactivo(Long id) {

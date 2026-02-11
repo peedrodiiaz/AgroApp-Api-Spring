@@ -51,4 +51,11 @@ public class JwtControllerAdvice extends ResponseEntityExceptionHandler {
 
     return problemDetail;
   }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ProblemDetail handleRuntimeException(RuntimeException ex) {
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+        ex.getMessage());
+    return problemDetail;
+  }
 }

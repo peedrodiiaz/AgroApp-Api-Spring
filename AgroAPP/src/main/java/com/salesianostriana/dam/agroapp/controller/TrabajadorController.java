@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,7 @@ public class TrabajadorController {
     private final TrabajadorService trabajadorService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TrabajadorResponse> create(@Valid @RequestBody CreateTrabajadorRequest body) {
         Trabajador nuevo = trabajadorService.create(body);
         return ResponseEntity
@@ -47,6 +49,7 @@ public class TrabajadorController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TrabajadorResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody UpdateTrabajadorRequest body
@@ -57,6 +60,7 @@ public class TrabajadorController {
     }
 
     @PatchMapping("/{id}/activacion")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TrabajadorResponse> toggleActivacion(@PathVariable Long id) {
         return ResponseEntity.ok(
                 TrabajadorResponse.of(trabajadorService.cambiarActivoInactivo(id))
@@ -64,6 +68,7 @@ public class TrabajadorController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<TrabajadorResponse> getAll(
             @PageableDefault(size = 10, page = 0) Pageable pageable
     ) {
@@ -71,5 +76,11 @@ public class TrabajadorController {
                 .map(TrabajadorResponse::of);
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        trabajadorService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }

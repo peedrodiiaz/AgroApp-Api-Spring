@@ -40,6 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String token = getJwtAccessTokenFromRequest(request);
 
     try {
+
+      if (request.getRequestURI().startsWith("h2-console")) {
+        filterChain.doFilter(request, response);
+        return;
+      }
+
       if (StringUtils.hasText(token) && jwtService.validateAccessToken(token)) {
 
         Long id = jwtService.getUserIdFromAccessToken(token);

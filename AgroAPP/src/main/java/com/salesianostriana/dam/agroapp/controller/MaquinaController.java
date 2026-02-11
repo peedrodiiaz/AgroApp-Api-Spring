@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class MaquinaController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MaquinaResponse> create(@RequestBody CreateMaquinaRequest request) {
         Maquina maquina = maquinaService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -40,6 +42,7 @@ public class MaquinaController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MaquinaResponse> update(@PathVariable Long id,
 
             @RequestBody UpdateMaquinaDto dto) {
@@ -48,6 +51,7 @@ public class MaquinaController {
     }
 
     @PatchMapping("/{id}/estado")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MaquinaResponse> cambiarEstado(@PathVariable Long id,
             @RequestBody CambiarEstadoMaquinaDto cmd) {
         Maquina maquina = maquinaService.cambiarEstado(id, cmd.estado());
@@ -55,12 +59,14 @@ public class MaquinaController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         maquinaService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/stats")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MaquinaStatsDto> getStats() {
         return ResponseEntity.ok(maquinaService.getStats());
     }

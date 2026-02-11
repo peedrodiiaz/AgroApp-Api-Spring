@@ -48,7 +48,8 @@ public class IncidenciaService {
         if (existeIncidenciaAbierta) {
             throw new RuntimeException("Ya existe una incidencia abierta o en progreso sobre esta máquina. Cierre la anterior antes de crear una nueva.");
         }
-        
+
+
         Trabajador logeado;
         if (trabajadorActual.getRol()== Rol.ADMIN && cmd.trabajadorId()!=null){
             logeado = trabajadorRepository.findById(cmd.trabajadorId())
@@ -71,7 +72,31 @@ public class IncidenciaService {
         return incidenciaRepository.save(incidencia);
 
     }
-    @Transactional
+
+
+    public Incidencia update(Long id, CreateIncidenciaRequest cmd) {
+        Incidencia incidencia = findById(id);
+
+        incidencia.setTitulo(cmd.titulo());
+        incidencia.setDescripcion(cmd.descripcion());
+        incidencia.setPrioridad(cmd.prioridad());
+        incidencia.setEstadoIncidencia(cmd.estadoIncidencia());
+
+        if (cmd.maquinaId() != null && !cmd.maquinaId().equals(incidencia.getMaquina().getId())) {
+            Maquina maquina = maquinaRepository.findById(cmd.maquinaId())
+                    .orElseThrow(() -> new EntityNotFoundException("Máquina no encontrada"));
+            incidencia.setMaquina(maquina);
+        }
+
+        if (cmd.trabajadorId() != null && !cmd.trabajadorId().equals(incidencia.getTrabajador().getId())) {
+            Trabajador trabajador = trabajadorRepository.findById(cmd.trabajadorId())
+                    .orElseThrow(() -> new EntityNotFoundException("Trabajador no encontrado"));
+            incidencia.setTrabajador(trabajador);
+        }
+
+        return incidenciaRepository.save(incidencia);
+    }
+
     public Incidencia cerrar(Long id) {
         Incidencia incidencia = findById(id);
 
