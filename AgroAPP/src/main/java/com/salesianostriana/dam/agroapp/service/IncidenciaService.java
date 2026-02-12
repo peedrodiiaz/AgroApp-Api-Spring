@@ -39,7 +39,6 @@ public class IncidenciaService {
                 ()-> new EntityNotFoundException("No se ha encontrado la máquina con id %d".formatted(cmd.maquinaId()))
         );
         
-        // Validar que no exista una incidencia abierta sobre la misma máquina
         boolean existeIncidenciaAbierta = incidenciaRepository.existsByMaquinaIdAndEstadoIncidenciaIn(
                 cmd.maquinaId(),
                 java.util.Arrays.asList(EstadoIncidencia.ABIERTA, EstadoIncidencia.EN_PROGRESO)

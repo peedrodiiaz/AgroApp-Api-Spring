@@ -12,7 +12,7 @@ public record IncidenciaResponseDto(
         Long id,
         String titulo,
         String descripcion,
-        EstadoIncidencia estado,
+        EstadoIncidencia estadoIncidencia,
         Prioridad prioridad,
         LocalDateTime fechaApertura,
         MaquinaResponse maquina,
