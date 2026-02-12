@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.agroapp.controller;
 
+import com.salesianostriana.dam.agroapp.dto.incidencia.CambiarEstadoRequest;
 import com.salesianostriana.dam.agroapp.dto.incidencia.CreateIncidenciaRequest;
 import com.salesianostriana.dam.agroapp.dto.incidencia.IncidenciaResponseDto;
 import com.salesianostriana.dam.agroapp.model.Incidencia;
@@ -52,16 +53,18 @@ public class IncidenciaController {
             @PathVariable Long id,
             @RequestBody CreateIncidenciaRequest cmd) {
         Incidencia actualizada = incidenciaService.update(id, cmd);
+
+        return ResponseEntity.ok(IncidenciaResponseDto.of(actualizada));
+    }
+    @PatchMapping("/{id}/estado")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<IncidenciaResponseDto> cambiarEstado(
+            @PathVariable Long id,
+            @RequestBody CambiarEstadoRequest cmd) {
+        Incidencia actualizada = incidenciaService.cambiarEstado(id, cmd.estadoIncidencia());
         return ResponseEntity.ok(IncidenciaResponseDto.of(actualizada));
     }
 
-
-    @PatchMapping("/{id}/cerrar")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<IncidenciaResponseDto> close(@PathVariable Long id) {
-        Incidencia cerrada = incidenciaService.cerrar(id);
-        return ResponseEntity.ok(IncidenciaResponseDto.of(cerrada));
-    }
 
 
 

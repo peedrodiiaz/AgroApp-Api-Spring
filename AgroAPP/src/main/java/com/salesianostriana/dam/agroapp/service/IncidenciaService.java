@@ -20,41 +20,42 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Transactional
 public class IncidenciaService {
-    private  final IncidenciaRepository incidenciaRepository;
+    private final IncidenciaRepository incidenciaRepository;
     private final TrabajadorRepository trabajadorRepository;
     private final MaquinaRepository maquinaRepository;
 
 
-    public Page <Incidencia>getAll (Pageable pageable){
+    public Page<Incidencia> getAll(Pageable pageable) {
         return incidenciaRepository.findAll(pageable);
     }
-    public Incidencia findById (Long id){
+
+    public Incidencia findById(Long id) {
         return incidenciaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No se ha encontrado incidencia con id %d".formatted(id)));
     }
 
-    public Incidencia create (CreateIncidenciaRequest cmd, Trabajador trabajadorActual){
+    public Incidencia create(CreateIncidenciaRequest cmd, Trabajador trabajadorActual) {
 
         Maquina maquina = maquinaRepository.findById(cmd.maquinaId()).orElseThrow(
-                ()-> new EntityNotFoundException("No se ha encontrado la máquina con id %d".formatted(cmd.maquinaId()))
+                () -> new EntityNotFoundException("No se ha encontrado la máquina con id %d".formatted(cmd.maquinaId()))
         );
-        
+
         boolean existeIncidenciaAbierta = incidenciaRepository.existsByMaquinaIdAndEstadoIncidenciaIn(
                 cmd.maquinaId(),
                 java.util.Arrays.asList(EstadoIncidencia.ABIERTA, EstadoIncidencia.EN_PROGRESO)
         );
-        
+
         if (existeIncidenciaAbierta) {
             throw new RuntimeException("Ya existe una incidencia abierta o en progreso sobre esta máquina. Cierre la anterior antes de crear una nueva.");
         }
 
 
         Trabajador logeado;
-        if (trabajadorActual.getRol()== Rol.ADMIN && cmd.trabajadorId()!=null){
+        if (trabajadorActual.getRol() == Rol.ADMIN && cmd.trabajadorId() != null) {
             logeado = trabajadorRepository.findById(cmd.trabajadorId())
                     .orElseThrow(() -> new EntityNotFoundException("Trabajador logeado no encontrado"));
-        }else {
-            logeado=trabajadorActual;
+        } else {
+            logeado = trabajadorActual;
         }
 
         Incidencia incidencia = Incidencia.builder()
@@ -81,6 +82,7 @@ public class IncidenciaService {
         incidencia.setPrioridad(cmd.prioridad());
         incidencia.setEstadoIncidencia(cmd.estadoIncidencia());
 
+
         if (cmd.maquinaId() != null && !cmd.maquinaId().equals(incidencia.getMaquina().getId())) {
             Maquina maquina = maquinaRepository.findById(cmd.maquinaId())
                     .orElseThrow(() -> new EntityNotFoundException("Máquina no encontrada"));
@@ -96,17 +98,18 @@ public class IncidenciaService {
         return incidenciaRepository.save(incidencia);
     }
 
-    public Incidencia cerrar(Long id) {
+    @Transactional
+    public Incidencia cambiarEstado(Long id, EstadoIncidencia nuevoEstado) {
         Incidencia incidencia = findById(id);
 
-        if (incidencia.getEstadoIncidencia() == EstadoIncidencia.RESUELTA) {
-            throw new RuntimeException("La incidencia ya está resuelta");
+        if (nuevoEstado == EstadoIncidencia.RESUELTA &&
+                incidencia.getEstadoIncidencia() != EstadoIncidencia.RESUELTA) {
+            incidencia.setFechaCierre(LocalDateTime.now());
         }
 
-        incidencia.setEstadoIncidencia(EstadoIncidencia.RESUELTA);
-        incidencia.setFechaCierre(LocalDateTime.now());
-
+        incidencia.setEstadoIncidencia(nuevoEstado);
         return incidenciaRepository.save(incidencia);
     }
+
 }
 

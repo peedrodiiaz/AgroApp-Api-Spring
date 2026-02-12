@@ -61,6 +61,7 @@ public class MaquinaService {
         maquina.setModelo(cmd.modelo());
         maquina.setFechaCompra(cmd.fechaCompra());
 
+
         return  maquinaRepository.save(maquina);
 
 
