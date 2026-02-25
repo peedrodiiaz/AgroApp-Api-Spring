@@ -19,7 +19,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Crear admin solo si no existe
+        // Crea admin solo si no existe
         if (trabajadorRepository.findByEmail("admin@agroapp.com").isEmpty()) {
             Trabajador admin = Trabajador.builder()
                     .nombre("Administrador")
@@ -27,7 +27,7 @@ public class DataInitializer implements CommandLineRunner {
                     .dni("00000000A")
                     .email("admin@agroapp.com")
                     .telefono("657474853")
-                    .password(passwordEncoder.encode("admin123")) // Cambia esta contraseña
+                    .password(passwordEncoder.encode("admin123"))
                     .rol(Rol.ADMIN)
                     .fechaAlta(LocalDate.now())
                     .enabled(true)
