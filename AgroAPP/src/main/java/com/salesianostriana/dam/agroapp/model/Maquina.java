@@ -34,12 +34,12 @@ public class Maquina {
   @Enumerated (EnumType.STRING)
   private EstadoMaquina estado;
 
-  @OneToMany (mappedBy = "maquina", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany (mappedBy = "maquina", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   @JsonIgnore
   @Builder.Default
   private List<Incidencia> incidencias=new ArrayList<>();
 
-    @OneToMany (mappedBy = "maquina", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany (mappedBy = "maquina", cascade = CascadeType.ALL, orphanRemoval = true, fetch =  FetchType.LAZY)
     @JsonIgnore
     @Builder.Default
   private List <Asignacion>asignaciones = new ArrayList<>();

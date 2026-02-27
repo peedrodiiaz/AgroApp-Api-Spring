@@ -55,7 +55,7 @@ public class Trabajador implements UserDetails {
     @Builder.Default
     private List<Incidencia> incidencias = new ArrayList<>();
 
-    @OneToMany(mappedBy = "trabajador", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "trabajador", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     @Builder.Default
     private List<Asignacion> asignaciones = new ArrayList<>();

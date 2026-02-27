@@ -19,7 +19,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Crea admin solo si no existe
         if (trabajadorRepository.findByEmail("admin@agroapp.com").isEmpty()) {
             Trabajador admin = Trabajador.builder()
                     .nombre("Administrador")
@@ -35,6 +34,20 @@ public class DataInitializer implements CommandLineRunner {
 
             trabajadorRepository.save(admin);
 
+            if (trabajadorRepository.findByEmail("pedro@agroapp.com").isEmpty()) {
+                Trabajador user = Trabajador.builder()
+                        .nombre("Pedro")
+                        .apellido("Díaz")
+                        .dni("77583424V")
+                        .email("pedro@agroapp.com")
+                        .telefono("65344853")
+                        .password(passwordEncoder.encode("pedro123"))
+                        .rol(Rol.TRABAJADOR)
+                        .fechaAlta(LocalDate.now())
+                        .enabled(true)
+                        .build();
+                trabajadorRepository.save(user);
+            }
         }
     }
 }
