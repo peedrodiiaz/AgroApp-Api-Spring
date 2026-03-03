@@ -30,7 +30,7 @@ public class RefreshTokenService {
     return refreshTokenRepository.save(
         RefreshToken.builder()
             .trabajador(trabajador)
-            .expireAt(Instant.now().plusSeconds(durationInMinutes * 60))
+            .expireAt(Instant.now().plusSeconds(durationInMinutes * 60L))
             .build());
   }
 

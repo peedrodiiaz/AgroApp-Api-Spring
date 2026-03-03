@@ -2,6 +2,8 @@ package com.salesianostriana.dam.agroapp.service;
 
 import com.salesianostriana.dam.agroapp.dto.trabajador.CreateTrabajadorRequest;
 import com.salesianostriana.dam.agroapp.dto.trabajador.UpdateTrabajadorRequest;
+ import com.salesianostriana.dam.agroapp.error.exception.DuplicateResourceException;
+import com.salesianostriana.dam.agroapp.error.exception.EntityNotFoundException;
 import com.salesianostriana.dam.agroapp.model.Trabajador;
 import com.salesianostriana.dam.agroapp.repository.TrabajadorRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,13 +32,13 @@ public class TrabajadorService {
 
         
         if (trabajadorRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("El email ya está registrado");
+            throw new DuplicateResourceException("email", request.email());
         }
         if (trabajadorRepository.existsByDni(request.dni())) {
-            throw new RuntimeException("El DNI ya está registrado");
+            throw new DuplicateResourceException("DNI", request.dni());
         }
         if (trabajadorRepository.existsByTelefono(request.telefono())) {
-            throw new RuntimeException("El teléfono ya está registrado");
+            throw new DuplicateResourceException("teléfono", request.telefono());
         }
 
         Trabajador trabajador = Trabajador.builder()
@@ -51,28 +53,30 @@ public class TrabajadorService {
                 .enabled(true)
                 .build();
 
-        Trabajador guardado = trabajadorRepository.save(trabajador);return guardado;
+        Trabajador guardado = trabajadorRepository.save(trabajador);
+        return guardado;
     }
 
     public Trabajador findByEmail(String email) {
         return trabajadorRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "No se ha encontrado ningún trabajador con email: " + email));
     }
 
     public Trabajador update(Long id, UpdateTrabajadorRequest request) {
         Trabajador trabajador = trabajadorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trabajador no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("trabajador", id));
 
         if (request.email() != null && !request.email().equals(trabajador.getEmail())) {
             if (trabajadorRepository.existsByEmail(request.email())) {
-                throw new RuntimeException("El email ya está en uso");
+                throw new DuplicateResourceException("email", request.email());
             }
             trabajador.setEmail(request.email());
         }
 
         if (request.telefono() != null && !request.telefono().equals(trabajador.getTelefono())) {
             if (trabajadorRepository.existsByTelefono(request.telefono())) {
-                throw new RuntimeException("El teléfono ya está en uso");
+                throw new DuplicateResourceException("teléfono", request.telefono());
             }
             trabajador.setTelefono(request.telefono());
         }
@@ -84,18 +88,15 @@ public class TrabajadorService {
     }
     public void delete(Long id) {
         Trabajador trabajador = trabajadorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trabajador no encontrado"));
-
+                .orElseThrow(() -> new EntityNotFoundException("trabajador", id));
         trabajador.setEnabled(false);
         trabajadorRepository.save(trabajador);
     }
 
     public Trabajador cambiarActivoInactivo(Long id) {
         Trabajador trabajador = trabajadorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trabajador no encontrado"));
-
+                .orElseThrow(() -> new EntityNotFoundException("trabajador", id));
         trabajador.setEnabled(!trabajador.isEnabled());
-
         return trabajadorRepository.save(trabajador);
     }
 

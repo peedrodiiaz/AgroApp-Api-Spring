@@ -3,11 +3,11 @@ package com.salesianostriana.dam.agroapp.service;
 import com.salesianostriana.dam.agroapp.dto.incidencia.CreateIncidenciaRequest;
 import com.salesianostriana.dam.agroapp.enums.EstadoIncidencia;
 import com.salesianostriana.dam.agroapp.enums.Rol;
+import com.salesianostriana.dam.agroapp.error.exception.EntityNotFoundException;
 import com.salesianostriana.dam.agroapp.model.*;
 import com.salesianostriana.dam.agroapp.repository.IncidenciaRepository;
 import com.salesianostriana.dam.agroapp.repository.MaquinaRepository;
 import com.salesianostriana.dam.agroapp.repository.TrabajadorRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,15 +15,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class IncidenciaService {
+
     private final IncidenciaRepository incidenciaRepository;
     private final TrabajadorRepository trabajadorRepository;
     private final MaquinaRepository maquinaRepository;
-
 
     public Page<Incidencia> getAll(Pageable pageable) {
         return incidenciaRepository.findAll(pageable);
@@ -31,29 +32,25 @@ public class IncidenciaService {
 
     public Incidencia findById(Long id) {
         return incidenciaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No se ha encontrado incidencia con id %d".formatted(id)));
+                .orElseThrow(() -> new EntityNotFoundException("incidencia", id));
     }
 
     public Incidencia create(CreateIncidenciaRequest cmd, Trabajador trabajadorActual) {
 
-        Maquina maquina = maquinaRepository.findById(cmd.maquinaId()).orElseThrow(
-                () -> new EntityNotFoundException("No se ha encontrado la máquina con id %d".formatted(cmd.maquinaId()))
-        );
+        Maquina maquina = maquinaRepository.findById(cmd.maquinaId())
+                .orElseThrow(() -> new EntityNotFoundException("máquina", cmd.maquinaId()));
 
         boolean existeIncidenciaAbierta = incidenciaRepository.existsByMaquinaIdAndEstadoIncidenciaIn(
                 cmd.maquinaId(),
-                java.util.Arrays.asList(EstadoIncidencia.ABIERTA, EstadoIncidencia.EN_PROGRESO)
+                Arrays.asList(EstadoIncidencia.ABIERTA, EstadoIncidencia.EN_PROGRESO)
         );
 
-        if (existeIncidenciaAbierta) {
-            throw new RuntimeException("Ya existe una incidencia abierta o en progreso sobre esta máquina. Cierre la anterior antes de crear una nueva.");
-        }
 
 
         Trabajador logeado;
         if (trabajadorActual.getRol() == Rol.ADMIN && cmd.trabajadorId() != null) {
             logeado = trabajadorRepository.findById(cmd.trabajadorId())
-                    .orElseThrow(() -> new EntityNotFoundException("Trabajador logeado no encontrado"));
+                    .orElseThrow(() -> new EntityNotFoundException("trabajador", cmd.trabajadorId()));
         } else {
             logeado = trabajadorActual;
         }
@@ -70,9 +67,7 @@ public class IncidenciaService {
         incidencia.setTrabajador(logeado);
 
         return incidenciaRepository.save(incidencia);
-
     }
-
 
     public Incidencia update(Long id, CreateIncidenciaRequest cmd) {
         Incidencia incidencia = findById(id);
@@ -82,16 +77,15 @@ public class IncidenciaService {
         incidencia.setPrioridad(cmd.prioridad());
         incidencia.setEstadoIncidencia(cmd.estadoIncidencia());
 
-
         if (cmd.maquinaId() != null && !cmd.maquinaId().equals(incidencia.getMaquina().getId())) {
             Maquina maquina = maquinaRepository.findById(cmd.maquinaId())
-                    .orElseThrow(() -> new EntityNotFoundException("Máquina no encontrada"));
+                    .orElseThrow(() -> new EntityNotFoundException("máquina", cmd.maquinaId()));
             incidencia.setMaquina(maquina);
         }
 
         if (cmd.trabajadorId() != null && !cmd.trabajadorId().equals(incidencia.getTrabajador().getId())) {
             Trabajador trabajador = trabajadorRepository.findById(cmd.trabajadorId())
-                    .orElseThrow(() -> new EntityNotFoundException("Trabajador no encontrado"));
+                    .orElseThrow(() -> new EntityNotFoundException("trabajador", cmd.trabajadorId()));
             incidencia.setTrabajador(trabajador);
         }
 
@@ -110,6 +104,4 @@ public class IncidenciaService {
         incidencia.setEstadoIncidencia(nuevoEstado);
         return incidenciaRepository.save(incidencia);
     }
-
 }
-
