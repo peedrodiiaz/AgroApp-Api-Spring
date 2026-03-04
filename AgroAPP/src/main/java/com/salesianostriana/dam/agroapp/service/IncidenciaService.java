@@ -95,9 +95,10 @@ public class IncidenciaService {
     @Transactional
     public Incidencia cambiarEstado(Long id, EstadoIncidencia nuevoEstado) {
         Incidencia incidencia = findById(id);
+        if (incidencia.getEstadoIncidencia()==EstadoIncidencia.RESUELTA)
+            throw new RuntimeException("No se puede volver a abrir la incidencia porque ya estaba resuelta");
 
-        if (nuevoEstado == EstadoIncidencia.RESUELTA &&
-                incidencia.getEstadoIncidencia() != EstadoIncidencia.RESUELTA) {
+        if (nuevoEstado == EstadoIncidencia.RESUELTA) {
             incidencia.setFechaCierre(LocalDateTime.now());
         }
 

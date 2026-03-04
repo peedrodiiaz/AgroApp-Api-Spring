@@ -28,8 +28,5 @@ public class Asignacion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maquina_id", foreignKey = @ForeignKey(name = "fk_asignacion_maquina"))
     private Maquina maquina;
-    public boolean seSolapaCon(Asignacion otra) {
-        return this.fechaInicio.isBefore(otra.getFechaFin()) &&
-                otra.getFechaInicio().isBefore(this.fechaFin);
-    }
+
 }

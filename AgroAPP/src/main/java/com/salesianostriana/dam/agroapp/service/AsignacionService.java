@@ -77,7 +77,8 @@ public class AsignacionService {
         boolean haySolapamiento = asignacionRepository.existsSolapamiento(
                 cmd.maquinaId(), cmd.fechaInicio(), cmd.fechaFin());
 
-
+        if (haySolapamiento)
+            throw new RuntimeException("Ya existen asignaciones de la máquina para esa fecha");
 
         Asignacion asignacion = Asignacion.builder()
                 .fechaInicio(cmd.fechaInicio())
@@ -121,7 +122,7 @@ public class AsignacionService {
         return asignacionRepository.save(asignacion);
     }
 
-    public void delete(Long id, Trabajador trabajadorActual) {
+    public void delete(Long id) {
         Asignacion asignacion = findById(id);
 
 
