@@ -15,7 +15,8 @@ public record TrabajadorResponse(
         @Schema(description = "DNI", example = "12345678A") String dni,
         @Schema(description = "Teléfono", example = "612345678") String telefono,
         @Schema(description = "Fecha de alta en el sistema", example = "2024-01-15") LocalDate fechaAlta,
-        @Schema(description = "Rol del trabajador", example = "TRABAJADOR") Rol rol
+        @Schema(description = "Rol del trabajador", example = "TRABAJADOR") Rol rol,
+        @Schema(description = "Si el trabajador está activo", example = "true") boolean enabled
 ) {
     public static TrabajadorResponse of(Trabajador t) {
         return new TrabajadorResponse(
@@ -26,7 +27,8 @@ public record TrabajadorResponse(
                 t.getDni(),
                 t.getTelefono(),
                 t.getFechaAlta(),
-                t.getRol()
+                t.getRol(),
+                t.isEnabled()
         );
     }
 }

@@ -24,7 +24,7 @@ public class TrabajadorService {
     private final PasswordEncoder passwordEncoder; 
 
     public Page <Trabajador>getAll(Pageable pageable) {
-        return trabajadorRepository.findByEnabledTrue(pageable);
+        return trabajadorRepository.findAll(pageable);
     }
 
 
