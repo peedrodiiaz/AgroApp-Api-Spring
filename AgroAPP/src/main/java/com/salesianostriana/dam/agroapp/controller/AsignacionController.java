@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -73,6 +75,7 @@ public class AsignacionController {
         } else {
             var lista = asignacionService.getMisAsignaciones(user)
                     .stream().map(AsignacionResponse::of).toList();
+            lista = lista.reversed();
             result = new PageImpl<>(lista, pageable, lista.size());
         }
 
