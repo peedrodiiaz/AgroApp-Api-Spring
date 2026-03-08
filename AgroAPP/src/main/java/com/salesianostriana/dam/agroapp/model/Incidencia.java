@@ -29,6 +29,9 @@ public class Incidencia {
     private LocalDateTime fechaApertura;
     private LocalDateTime fechaCierre;
 
+    private Double latitud;
+    private Double longitud;
+
     @Enumerated (EnumType.STRING)
     private Prioridad prioridad;
 
@@ -41,7 +44,5 @@ public class Incidencia {
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "maquina_id", foreignKey = @ForeignKey (name = "fk_incidencia_maquina"))
     private  Maquina maquina;
-
-
 
 }

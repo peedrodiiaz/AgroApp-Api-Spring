@@ -13,10 +13,16 @@ import com.salesianostriana.dam.agroapp.repository.IncidenciaRepository;
 import com.salesianostriana.dam.agroapp.repository.MaquinaRepository;
 import com.salesianostriana.dam.agroapp.repository.TrabajadorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,10 +37,28 @@ public class DataInitializer implements CommandLineRunner {
     private final IncidenciaRepository incidenciaRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${storage.location:./uploads}")
+    private String storageLocation;
+
+    private String downloadImage(String urlStr, String filename) {
+        try {
+            Path uploadsDir = Path.of(storageLocation);
+            Path targetPath = uploadsDir.resolve(filename);
+            if (Files.exists(targetPath)) return filename;
+            Files.createDirectories(uploadsDir);
+            URI uri = URI.create(urlStr);
+            try (InputStream in = uri.toURL().openStream()) {
+                Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+            return filename;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Override
     public void run(String... args) {
 
-        // ── TRABAJADORES ──────────────────────────────────────────────────────────
         if (trabajadorRepository.findByEmail("admin@agroapp.com").isEmpty()) {
             Trabajador admin = Trabajador.builder()
                     .nombre("Administrador")
@@ -46,6 +70,7 @@ public class DataInitializer implements CommandLineRunner {
                     .rol(Rol.ADMIN)
                     .fechaAlta(LocalDate.of(2024, 1, 15))
                     .enabled(true)
+                    .fotoPerfil(downloadImage("https://randomuser.me/api/portraits/men/1.jpg", "foto-admin.jpg"))
                     .build();
             trabajadorRepository.save(admin);
         }
@@ -61,6 +86,7 @@ public class DataInitializer implements CommandLineRunner {
                     .rol(Rol.TRABAJADOR)
                     .fechaAlta(LocalDate.of(2024, 2, 1))
                     .enabled(true)
+                    .fotoPerfil(downloadImage("https://randomuser.me/api/portraits/men/42.jpg", "foto-pedro.jpg"))
                     .build();
             trabajadorRepository.save(pedro);
         }
@@ -76,6 +102,7 @@ public class DataInitializer implements CommandLineRunner {
                     .rol(Rol.TRABAJADOR)
                     .fechaAlta(LocalDate.of(2024, 3, 10))
                     .enabled(true)
+                    .fotoPerfil(downloadImage("https://randomuser.me/api/portraits/women/23.jpg", "foto-maria.jpg"))
                     .build();
             trabajadorRepository.save(maria);
         }
@@ -91,6 +118,7 @@ public class DataInitializer implements CommandLineRunner {
                     .rol(Rol.TRABAJADOR)
                     .fechaAlta(LocalDate.of(2024, 4, 5))
                     .enabled(true)
+                    .fotoPerfil(downloadImage("https://randomuser.me/api/portraits/men/77.jpg", "foto-carlos.jpg"))
                     .build();
             trabajadorRepository.save(carlos);
         }
@@ -106,11 +134,11 @@ public class DataInitializer implements CommandLineRunner {
                     .rol(Rol.TRABAJADOR)
                     .fechaAlta(LocalDate.of(2024, 5, 20))
                     .enabled(true)
+                    .fotoPerfil(downloadImage("https://randomuser.me/api/portraits/women/55.jpg", "foto-laura.jpg"))
                     .build();
             trabajadorRepository.save(laura);
         }
 
-        // ── MÁQUINAS ──────────────────────────────────────────────────────────────
         if (maquinaRepository.count() == 0) {
 
             List<Maquina> maquinas = List.of(
@@ -120,6 +148,7 @@ public class DataInitializer implements CommandLineRunner {
                     .numSerie("JD6130R-001")
                     .fechaCompra(LocalDate.of(2020, 3, 15))
                     .estado(EstadoMaquina.ACTIVA)
+                    .imagen(downloadImage("https://www.lectura-specs.es/models/renamed/orig/tractores---traccion-4-ruedas-6130r-john-deere.jpg", "maquina-tractor-jd.jpg"))
                     .build(),
                 Maquina.builder()
                     .nombre("Cosechadora New Holland")
@@ -127,6 +156,7 @@ public class DataInitializer implements CommandLineRunner {
                     .numSerie("NH-CR990-002")
                     .fechaCompra(LocalDate.of(2019, 7, 22))
                     .estado(EstadoMaquina.ACTIVA)
+                    .imagen(downloadImage("https://m.media-amazon.com/images/I/71IjnqYMV6L._AC_UF894,1000_QL80_.jpg", "maquina-cosechadora-nh.jpg"))
                     .build(),
                 Maquina.builder()
                     .nombre("Pulverizadora HARDI")
@@ -134,6 +164,7 @@ public class DataInitializer implements CommandLineRunner {
                     .numSerie("HARDI-4200-003")
                     .fechaCompra(LocalDate.of(2021, 1, 10))
                     .estado(EstadoMaquina.MANTENIMIENTO)
+                    .imagen(downloadImage("https://ik.imagekit.io/efarm/images/7c59bbeb-3eb9-4004-a8a0-4e1f86b46789.jpg?tr=w-600%2Car-1000-667%2Cl-image%2Ci-%40%40website-machine-images-watermarks%40%40watermark_DZDDMXPYs_M9F2mQxfH.png%2Clx-6%2Cly-6%2Cw-90%2Cl-end", "maquina-pulverizadora.jpg"))
                     .build(),
                 Maquina.builder()
                     .nombre("Sembradora Amazone")
@@ -141,6 +172,7 @@ public class DataInitializer implements CommandLineRunner {
                     .numSerie("AMZ-D9-004")
                     .fechaCompra(LocalDate.of(2022, 6, 30))
                     .estado(EstadoMaquina.ACTIVA)
+                    .imagen(downloadImage("https://www.mazas.es/archivos/image/catalogo_productos/medias/55-229-productosembradoras-d9ad.jpg", "maquina-sembradora.jpg"))
                     .build(),
                 Maquina.builder()
                     .nombre("Remolque Basculante")
@@ -148,6 +180,7 @@ public class DataInitializer implements CommandLineRunner {
                     .numSerie("JOS-6600-005")
                     .fechaCompra(LocalDate.of(2018, 11, 5))
                     .estado(EstadoMaquina.ACTIVA)
+                    .imagen(downloadImage("https://quote.joskin.com/system/products/headers/000/000/055/original/0403_Trans-SPACE-202411-1092x580-min.jpg", "maquina-remolque.jpg"))
                     .build(),
                 Maquina.builder()
                     .nombre("Cultivador Lemken")
@@ -155,6 +188,7 @@ public class DataInitializer implements CommandLineRunner {
                     .numSerie("LEM-HEL9-006")
                     .fechaCompra(LocalDate.of(2023, 2, 14))
                     .estado(EstadoMaquina.ACTIVA)
+                    .imagen(downloadImage("https://dnge9sb91helb.cloudfront.net/imagetilewm/product/jma/lemken-heliodor-9-70,333bb0ba_8720026_1.jpg", "maquina-cultivador.jpg"))
                     .build(),
                 Maquina.builder()
                     .nombre("Pala Cargadora Claas")
@@ -162,6 +196,7 @@ public class DataInitializer implements CommandLineRunner {
                     .numSerie("CLS-TOR639-007")
                     .fechaCompra(LocalDate.of(2017, 9, 19))
                     .estado(EstadoMaquina.INACTIVA)
+                    .imagen(downloadImage("https://cdn.truckscout24.com/data/listing/img/vga/ts/90/38/20866832-01.jpg?v=1767656852", "maquina-pala.jpg"))
                     .build(),
                 Maquina.builder()
                     .nombre("Empacadora Krone")
@@ -169,12 +204,12 @@ public class DataInitializer implements CommandLineRunner {
                     .numSerie("KRN-BP1290-008")
                     .fechaCompra(LocalDate.of(2021, 4, 28))
                     .estado(EstadoMaquina.MANTENIMIENTO)
+                    .imagen(downloadImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdC1zpFe-40MSP7Pm569uKDeygqAosAGw-7A&s", "maquina-empacadora.jpg"))
                     .build()
             );
 
             maquinaRepository.saveAll(maquinas);
 
-            // ── ASIGNACIONES ──────────────────────────────────────────────────────
             Trabajador pedro  = trabajadorRepository.findByEmail("pedro@agroapp.com").orElseThrow();
             Trabajador maria  = trabajadorRepository.findByEmail("maria@agroapp.com").orElseThrow();
             Trabajador carlos = trabajadorRepository.findByEmail("carlos@agroapp.com").orElseThrow();
@@ -240,7 +275,6 @@ public class DataInitializer implements CommandLineRunner {
 
             asignacionRepository.saveAll(asignaciones);
 
-            // ── INCIDENCIAS ───────────────────────────────────────────────────────
             Maquina pulverizadora = maquinas.get(2);
 
             List<Incidencia> incidencias = List.of(
@@ -251,6 +285,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaCierre(LocalDateTime.of(2025, 2, 12, 16, 0))
                     .prioridad(Prioridad.ALTA)
                     .estadoIncidencia(EstadoIncidencia.RESUELTA)
+                    .latitud(38.9177).longitud(-6.3424)
                     .trabajador(pedro).maquina(tractor)
                     .build(),
                 Incidencia.builder()
@@ -259,6 +294,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaApertura(LocalDateTime.of(2025, 7, 10, 10, 0))
                     .prioridad(Prioridad.MEDIA)
                     .estadoIncidencia(EstadoIncidencia.EN_PROGRESO)
+                    .latitud(37.3891).longitud(-5.9845)
                     .trabajador(maria).maquina(cosechadora)
                     .build(),
                 Incidencia.builder()
@@ -268,6 +304,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaCierre(LocalDateTime.of(2025, 5, 4, 12, 0))
                     .prioridad(Prioridad.MEDIA)
                     .estadoIncidencia(EstadoIncidencia.RESUELTA)
+                    .latitud(36.6819).longitud(-6.1367)
                     .trabajador(carlos).maquina(pulverizadora)
                     .build(),
                 Incidencia.builder()
@@ -277,6 +314,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaCierre(LocalDateTime.of(2025, 3, 3, 14, 30))
                     .prioridad(Prioridad.ALTA)
                     .estadoIncidencia(EstadoIncidencia.RESUELTA)
+                    .latitud(38.8794).longitud(-6.9706)
                     .trabajador(carlos).maquina(sembradora)
                     .build(),
                 Incidencia.builder()
@@ -286,6 +324,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaCierre(LocalDateTime.of(2025, 2, 15, 15, 0))
                     .prioridad(Prioridad.BAJA)
                     .estadoIncidencia(EstadoIncidencia.RESUELTA)
+                    .latitud(37.8882).longitud(-4.7794)
                     .trabajador(pedro).maquina(remolque)
                     .build(),
                 Incidencia.builder()
@@ -294,6 +333,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaApertura(LocalDateTime.of(2025, 6, 12, 8, 0))
                     .prioridad(Prioridad.ALTA)
                     .estadoIncidencia(EstadoIncidencia.EN_PROGRESO)
+                    .latitud(40.9701).longitud(-5.6635)
                     .trabajador(laura).maquina(empacadora)
                     .build(),
                 Incidencia.builder()
@@ -302,6 +342,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaApertura(LocalDateTime.of(2025, 4, 16, 9, 30))
                     .prioridad(Prioridad.BAJA)
                     .estadoIncidencia(EstadoIncidencia.ABIERTA)
+                    .latitud(39.8628).longitud(-4.0273)
                     .trabajador(laura).maquina(cultivador)
                     .build(),
                 Incidencia.builder()
@@ -310,6 +351,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaApertura(LocalDateTime.of(2025, 9, 5, 7, 30))
                     .prioridad(Prioridad.MEDIA)
                     .estadoIncidencia(EstadoIncidencia.ABIERTA)
+                    .latitud(38.9942).longitud(-1.8564)
                     .trabajador(maria).maquina(tractor)
                     .build(),
                 Incidencia.builder()
@@ -319,6 +361,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaCierre(LocalDateTime.of(2025, 7, 22, 10, 0))
                     .prioridad(Prioridad.ALTA)
                     .estadoIncidencia(EstadoIncidencia.RESUELTA)
+                    .latitud(41.6488).longitud(-0.8891)
                     .trabajador(maria).maquina(cosechadora)
                     .build(),
                 Incidencia.builder()
@@ -327,6 +370,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaApertura(LocalDateTime.of(2025, 10, 1, 8, 0))
                     .prioridad(Prioridad.ALTA)
                     .estadoIncidencia(EstadoIncidencia.ABIERTA)
+                    .latitud(41.6523).longitud(-4.7245)
                     .trabajador(pedro).maquina(tractor)
                     .build()
             );

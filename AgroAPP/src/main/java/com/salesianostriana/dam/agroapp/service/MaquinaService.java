@@ -8,11 +8,13 @@ import com.salesianostriana.dam.agroapp.error.exception.DuplicateResourceExcepti
 import com.salesianostriana.dam.agroapp.error.exception.EntityNotFoundException;
 import com.salesianostriana.dam.agroapp.model.Maquina;
 import com.salesianostriana.dam.agroapp.repository.MaquinaRepository;
+import com.salesianostriana.dam.agroapp.storage.StorageService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class MaquinaService {
 
     private final MaquinaRepository maquinaRepository;
+    private final StorageService storageService;
 
     public Page<Maquina> findAll(Pageable pageable) {
         return maquinaRepository.findAll(pageable);
@@ -68,5 +71,15 @@ public class MaquinaService {
     public void delete(Long id) {
         Maquina maquina = findById(id);
         maquinaRepository.delete(maquina);
+    }
+
+    public Maquina updateImagen(Long id, MultipartFile file) {
+        Maquina maquina = findById(id);
+        if (maquina.getImagen() != null) {
+            storageService.deleteFile(maquina.getImagen());
+        }
+        String filename = storageService.store(file);
+        maquina.setImagen(filename);
+        return maquinaRepository.save(maquina);
     }
 }

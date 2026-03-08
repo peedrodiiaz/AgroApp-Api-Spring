@@ -42,13 +42,14 @@ public class Trabajador implements UserDetails {
 
     private LocalDate fechaAlta;
 
+    private String fotoPerfil;
+
     @Enumerated(EnumType.STRING)
     private Rol rol;
 
     @Column(nullable = false)
     @Builder.Default
     private boolean enabled = true;
-
 
     @OneToMany(mappedBy = "trabajador")
     @JsonIgnore
@@ -59,7 +60,6 @@ public class Trabajador implements UserDetails {
     @JsonIgnore
     @Builder.Default
     private List<Asignacion> asignaciones = new ArrayList<>();
-
 
     public void addIncidencia(Incidencia incidencia) {
         incidencias.add(incidencia);

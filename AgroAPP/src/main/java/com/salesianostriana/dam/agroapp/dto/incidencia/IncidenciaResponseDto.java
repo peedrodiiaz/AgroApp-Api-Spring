@@ -18,13 +18,16 @@ public record IncidenciaResponseDto(
         @Schema(description = "Prioridad", example = "ALTA") Prioridad prioridad,
         @Schema(description = "Fecha y hora de apertura", example = "2024-03-15T09:30:00") LocalDateTime fechaApertura,
         @Schema(description = "Máquina asociada a la incidencia") MaquinaResponse maquina,
-        @Schema(description = "Trabajador responsable") TrabajadorResponse trabajador
+        @Schema(description = "Trabajador responsable") TrabajadorResponse trabajador,
+        @Schema(description = "Latitud de la incidencia", example = "37.3886") Double latitud,
+        @Schema(description = "Longitud de la incidencia", example = "-5.9823") Double longitud
 ) {
     public static IncidenciaResponseDto of(Incidencia i) {
         return new IncidenciaResponseDto(
                 i.getId(), i.getTitulo(), i.getDescripcion(),
                 i.getEstadoIncidencia(), i.getPrioridad(), i.getFechaApertura(),
-                MaquinaResponse.of(i.getMaquina()), TrabajadorResponse.of(i.getTrabajador())
+                MaquinaResponse.of(i.getMaquina()), TrabajadorResponse.of(i.getTrabajador()),
+                i.getLatitud(), i.getLongitud()
         );
     }
 }

@@ -1,6 +1,5 @@
 package com.salesianostriana.dam.agroapp.error.exception;
 
-
 public class DuplicateResourceException extends RuntimeException {
 
     public DuplicateResourceException(String message) {

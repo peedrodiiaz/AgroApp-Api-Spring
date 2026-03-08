@@ -20,9 +20,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -144,5 +146,20 @@ public class MaquinaController {
     })
     public ResponseEntity<MaquinaStatsDto> getStats() {
         return ResponseEntity.ok(maquinaService.getStats());
+    }
+
+    @PutMapping(value = "/{id}/imagen", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Subir imagen de máquina", description = "Sube o reemplaza la imagen de una máquina. Solo ADMIN.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Imagen subida correctamente",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = MaquinaResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Máquina no encontrada", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado", content = @Content)
+    })
+    public ResponseEntity<MaquinaResponse> uploadImagen(
+            @Parameter(description = "ID de la máquina", example = "1") @PathVariable Long id,
+            @RequestPart("file") MultipartFile file) {
+        return ResponseEntity.ok(MaquinaResponse.of(maquinaService.updateImagen(id, file)));
     }
 }

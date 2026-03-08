@@ -64,8 +64,6 @@ public class AsignacionService {
         Maquina maquina = maquinaRepository.findById(cmd.maquinaId())
                 .orElseThrow(() -> new EntityNotFoundException("máquina", cmd.maquinaId()));
 
-
-
         Trabajador trabajadorAsignado;
         if (trabajadorActual.getRol() == Rol.ADMIN && cmd.trabajadorId() != null) {
             trabajadorAsignado = trabajadorRepository.findById(cmd.trabajadorId())
@@ -96,18 +94,15 @@ public class AsignacionService {
 
         Asignacion asignacion = findById(id);
 
-
         if (!asignacion.getMaquina().getId().equals(cmd.maquinaId())) {
             Maquina nuevaMaquina = maquinaRepository.findById(cmd.maquinaId())
                     .orElseThrow(() -> new EntityNotFoundException("máquina", cmd.maquinaId()));
-
 
             asignacion.setMaquina(nuevaMaquina);
         }
 
         boolean haySolapamiento = asignacionRepository.existsSolapamientoExceptoId(
                 cmd.maquinaId(), id, cmd.fechaInicio(), cmd.fechaFin());
-
 
         asignacion.setFechaInicio(cmd.fechaInicio());
         asignacion.setFechaFin(cmd.fechaFin());
@@ -124,7 +119,6 @@ public class AsignacionService {
 
     public void delete(Long id) {
         Asignacion asignacion = findById(id);
-
 
         asignacionRepository.delete(asignacion);
     }

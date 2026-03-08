@@ -31,6 +31,8 @@ public class Maquina {
 
   private LocalDate fechaCompra;
 
+  private String imagen;
+
   @Enumerated (EnumType.STRING)
   private EstadoMaquina estado;
 
@@ -67,7 +69,5 @@ public class Maquina {
       }
       return true;
     }
-
-
 
 }

@@ -20,10 +20,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/trabajadores")
@@ -138,5 +140,31 @@ public class TrabajadorController {
             @Parameter(description = "ID del trabajador", example = "2") @PathVariable Long id) {
         trabajadorService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(value = "/me/foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Subir foto de perfil propia", description = "El trabajador sube o reemplaza su foto de perfil")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Foto actualizada",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TrabajadorResponse.class)))
+    })
+    public ResponseEntity<TrabajadorResponse> uploadMiFoto(
+            @AuthenticationPrincipal Trabajador user,
+            @RequestPart("file") MultipartFile file) {
+        return ResponseEntity.ok(TrabajadorResponse.of(trabajadorService.updateFoto(user.getId(), file)));
+    }
+
+    @PutMapping(value = "/{id}/foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Subir foto de trabajador", description = "ADMIN sube o reemplaza la foto de perfil de un trabajador")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Foto actualizada",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TrabajadorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Trabajador no encontrado", content = @Content)
+    })
+    public ResponseEntity<TrabajadorResponse> uploadFoto(
+            @Parameter(description = "ID del trabajador", example = "2") @PathVariable Long id,
+            @RequestPart("file") MultipartFile file) {
+        return ResponseEntity.ok(TrabajadorResponse.of(trabajadorService.updateFoto(id, file)));
     }
 }

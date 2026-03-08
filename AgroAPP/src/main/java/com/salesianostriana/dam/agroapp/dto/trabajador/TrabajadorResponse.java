@@ -16,7 +16,8 @@ public record TrabajadorResponse(
         @Schema(description = "Teléfono", example = "612345678") String telefono,
         @Schema(description = "Fecha de alta en el sistema", example = "2024-01-15") LocalDate fechaAlta,
         @Schema(description = "Rol del trabajador", example = "TRABAJADOR") Rol rol,
-        @Schema(description = "Si el trabajador está activo", example = "true") boolean enabled
+        @Schema(description = "Si el trabajador está activo", example = "true") boolean enabled,
+        @Schema(description = "Nombre del fichero de foto de perfil", example = "foto.jpg") String fotoPerfil
 ) {
     public static TrabajadorResponse of(Trabajador t) {
         return new TrabajadorResponse(
@@ -28,7 +29,8 @@ public record TrabajadorResponse(
                 t.getTelefono(),
                 t.getFechaAlta(),
                 t.getRol(),
-                t.isEnabled()
+                t.isEnabled(),
+                t.getFotoPerfil()
         );
     }
 }

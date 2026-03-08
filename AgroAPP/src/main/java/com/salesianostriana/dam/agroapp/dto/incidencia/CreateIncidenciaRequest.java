@@ -13,6 +13,8 @@ public record CreateIncidenciaRequest(
         @Schema(description = "Estado inicial: ABIERTA, EN_PROGRESO o RESUELTA", example = "ABIERTA") EstadoIncidencia estadoIncidencia,
         @Schema(description = "ID de la máquina afectada", example = "3") @NotNull Long maquinaId,
         @Schema(description = "ID del trabajador responsable", example = "2") @NotNull Long trabajadorId,
-        @Schema(description = "Prioridad: BAJA, MEDIA o ALTA", example = "ALTA") Prioridad prioridad
+        @Schema(description = "Prioridad: BAJA, MEDIA o ALTA", example = "ALTA") Prioridad prioridad,
+        @Schema(description = "Latitud donde ocurrió la incidencia", example = "37.3886") Double latitud,
+        @Schema(description = "Longitud donde ocurrió la incidencia", example = "-5.9823") Double longitud
 ) {
 }

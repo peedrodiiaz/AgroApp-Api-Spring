@@ -13,7 +13,8 @@ public record MaquinaResponse(
         @Schema(description = "Modelo", example = "6130M") String modelo,
         @Schema(description = "Número de serie (único)", example = "JD-2024-001") String numSerie,
         @Schema(description = "Fecha de compra", example = "2022-03-15") LocalDate fechaCompra,
-        @Schema(description = "Estado actual: ACTIVA, MANTENIMIENTO o INACTIVA", example = "ACTIVA") EstadoMaquina estado
+        @Schema(description = "Estado actual: ACTIVA, MANTENIMIENTO o INACTIVA", example = "ACTIVA") EstadoMaquina estado,
+        @Schema(description = "Nombre del fichero de imagen", example = "tractor.jpg") String imagen
 ) {
 
     public static MaquinaResponse of(Maquina m){
@@ -23,7 +24,8 @@ public record MaquinaResponse(
                 m.getModelo(),
                 m.getNumSerie(),
                 m.getFechaCompra(),
-                m.getEstado()
+                m.getEstado(),
+                m.getImagen()
         );
     }
 }

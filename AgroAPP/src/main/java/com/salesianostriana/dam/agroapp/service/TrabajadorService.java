@@ -6,12 +6,14 @@ import com.salesianostriana.dam.agroapp.dto.trabajador.UpdateTrabajadorRequest;
 import com.salesianostriana.dam.agroapp.error.exception.EntityNotFoundException;
 import com.salesianostriana.dam.agroapp.model.Trabajador;
 import com.salesianostriana.dam.agroapp.repository.TrabajadorRepository;
+import com.salesianostriana.dam.agroapp.storage.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -21,12 +23,12 @@ import java.time.LocalDate;
 public class TrabajadorService {
 
     private final TrabajadorRepository trabajadorRepository;
-    private final PasswordEncoder passwordEncoder; 
+    private final PasswordEncoder passwordEncoder;
+    private final StorageService storageService;
 
     public Page <Trabajador>getAll(Pageable pageable) {
         return trabajadorRepository.findAll(pageable);
     }
-
 
     public Trabajador create(CreateTrabajadorRequest request) {
 
@@ -97,6 +99,17 @@ public class TrabajadorService {
         Trabajador trabajador = trabajadorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("trabajador", id));
         trabajador.setEnabled(!trabajador.isEnabled());
+        return trabajadorRepository.save(trabajador);
+    }
+
+    public Trabajador updateFoto(Long id, MultipartFile file) {
+        Trabajador trabajador = trabajadorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("trabajador", id));
+        if (trabajador.getFotoPerfil() != null) {
+            storageService.deleteFile(trabajador.getFotoPerfil());
+        }
+        String filename = storageService.store(file);
+        trabajador.setFotoPerfil(filename);
         return trabajadorRepository.save(trabajador);
     }
 

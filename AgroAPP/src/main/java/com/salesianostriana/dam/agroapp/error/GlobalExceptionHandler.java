@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
@@ -43,7 +42,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return pd;
     }
 
-
     @ExceptionHandler(AccessDeniedException.class)
     public ProblemDetail handleAccessDenied(AccessDeniedException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "No tienes permisos para realizar esta acción");
@@ -51,7 +49,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         pd.setType(URI.create("https://agroapp.api/errors/forbidden"));
         return pd;
     }
-
 
     @ExceptionHandler(AuthenticationException.class)
     public ErrorResponse handleAuthentication(AuthenticationException ex) {
@@ -79,7 +76,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return pd;
     }
 
-
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
@@ -95,7 +91,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity.badRequest().body(pd);
     }
-
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {
@@ -114,6 +109,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         pd.setType(URI.create("https://agroapp.api/errors/internal"));
         return pd;
     }
-
 
 }

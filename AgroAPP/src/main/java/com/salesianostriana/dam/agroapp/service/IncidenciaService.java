@@ -45,8 +45,6 @@ public class IncidenciaService {
                 Arrays.asList(EstadoIncidencia.ABIERTA, EstadoIncidencia.EN_PROGRESO)
         );
 
-
-
         Trabajador logeado;
         if (trabajadorActual.getRol() == Rol.ADMIN && cmd.trabajadorId() != null) {
             logeado = trabajadorRepository.findById(cmd.trabajadorId())
@@ -61,6 +59,8 @@ public class IncidenciaService {
                 .prioridad(cmd.prioridad())
                 .estadoIncidencia(cmd.estadoIncidencia())
                 .fechaApertura(LocalDateTime.now())
+                .latitud(cmd.latitud())
+                .longitud(cmd.longitud())
                 .build();
 
         incidencia.setMaquina(maquina);
@@ -76,6 +76,8 @@ public class IncidenciaService {
         incidencia.setDescripcion(cmd.descripcion());
         incidencia.setPrioridad(cmd.prioridad());
         incidencia.setEstadoIncidencia(cmd.estadoIncidencia());
+        incidencia.setLatitud(cmd.latitud());
+        incidencia.setLongitud(cmd.longitud());
 
         if (cmd.maquinaId() != null && !cmd.maquinaId().equals(incidencia.getMaquina().getId())) {
             Maquina maquina = maquinaRepository.findById(cmd.maquinaId())
